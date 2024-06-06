@@ -1,0 +1,8 @@
+.tabs-container.overflow-x-auto {
+    overflow-x: auto;
+    -ms-overflow-style: none;  /* for Internet Explorer, Edge */
+    scrollbar-width: none;  /* for Firefox */
+  }
+  .tabs-container.overflow-x-auto::-webkit-scrollbar {
+    display: none;  /* for Chrome, Safari, and Opera */
+  }
