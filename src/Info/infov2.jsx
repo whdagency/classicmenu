@@ -8,8 +8,6 @@ import {Link} from "react-router-dom"
 import Spinner from 'react-spinner-material';
 import { Button } from "@/components/ui/button"
 import { APIURL } from '../lib/ApiKey';
-// import { BsFillTelephoneFill } from "react-icons/bs";
-// import { ScrollArea } from "@/components/ui/scroll-area"
 import { FaFacebook ,FaInstagram,FaTiktok,FaSnapchat,FaYoutube,FaWifi} from "react-icons/fa";
 
 export default function Info({ items, infoRes, customization }) {
@@ -44,7 +42,7 @@ export default function Info({ items, infoRes, customization }) {
             <h1 className="text-2xl font-bold mb-2">{items.name}</h1>
             <div className="flex flex-wrap justify-center mb-6">
                 {socialMediaLinks.map((item, index) => (
-                    <div key={index} className="w-10 h-10 rounded-full border border-1 border-grey/50 grid text-[#28509E] place-content-center mx-2 mb-2">
+                    <div key={index} className="mix-blend-difference w-10 h-10 rounded-full border border-1 border-grey/50 grid text-[#28509E] place-content-center mx-2 mb-2">
                         <Link to={item.link} target="_blank">
                             <item.icon size={25}  color={customization?.selectedIconColor} />
                         </Link>
