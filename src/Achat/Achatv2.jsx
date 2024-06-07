@@ -15,11 +15,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-export default function Achat({ tabel_id, resto_id, infoRes, customization }) {
+import { useLocation } from "react-router-dom";
+export default function Achat({  resto_id, infoRes, customization }) {
   const cartItems = useSelector(state => state.cart.items);
   const totalCost = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   const dispatch = useDispatch();
-  
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const extraInfo = queryParams.get('table_id');
+ const tabel_id = extraInfo
   const [orderSuccessModalOpen, setOrderSuccessModalOpen] = useState(false); 
   async function submitOrder(cartItems, totalCost) {
     let cartItemProduct = cartItems.map(item => ({

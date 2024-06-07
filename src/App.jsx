@@ -63,7 +63,7 @@ function App() {
           const drinkData = await drinkResponse.json();
           let combinedData = [];
           const filteredDishes = dishData?.length > 0 && dishData.filter(dish => visibleCategoryIds.includes(dish.category_id)).map(item => ({ ...item, type: 'dish' }));
-          const filteredDrinks = drinkData?.length > 0 && dishData.filter(drink => visibleCategoryIds.includes(drink.category_id)).map(item => ({ ...item, type: 'drink' }));
+          const filteredDrinks = drinkData?.length > 0 && drinkData.filter(drink => visibleCategoryIds.includes(drink.category_id)).map(item => ({ ...item, type: 'drink' }));
           if (filteredDishes.length) {
             combinedData.push(...filteredDishes);
           }
@@ -99,6 +99,7 @@ function App() {
 
   return (
     <div className="h-screen" style={{ backgroundColor: customization.selectedBgColor }}>
+      
       <Helmet>
         <title>{restos?.name}</title>
         <meta name="description" content={resInfo?.description} />
