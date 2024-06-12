@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import MenuItems from '../MenuItems/MenuItems';
-import "./tab.css"
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import MenuItems from "../MenuItems/MenuItems";
+import "./tab.css";
 function Tab({
   categories,
   dishes,
@@ -10,53 +10,86 @@ function Tab({
   resto,
   infoRes,
   tabel_id,
-  customization
+  customization,
 }) {
   // Filter categories that have dishes or drinks associated with them
   const [filteredCategories, setFilteredCategories] = useState([]);
   useEffect(() => {
-    const filtered = categories.filter(category => {
-      return dishes.some(item => {
-        const categoryName = item.categorie ? item.categorie.name : item.category;
+    const filtered = categories.filter((category) => {
+      return dishes.some((item) => {
+        const categoryName = item.categorie
+          ? item.categorie.name
+          : item.category;
         console.log("dishesss", dishes);
         return categoryName === category.name && !item.isCustomizable; // Exclude customizable dishes
       });
     });
     setFilteredCategories(filtered);
-  }, [categories]);
+  }, [categories, dishes]);
   // const primaryColor = customization?.selectedPrimaryColor;
 
   return (
     <div className="">
-      <div className="tabs-container overflow-x-auto pl-4">
-        <div className="flex md:justify-center gap-4 mb-1">
-          <div className="relative shadow-md rounded-xl border-gray-300 border inline-block">
+      <div className="tabs-container pl-4 overflow-x-auto">
+        <div className="md:justify-center flex gap-4 mb-1">
+          <div className="rounded-xl relative inline-block border border-gray-300 shadow-md">
             <div
               className={`tab flex items-center w-[90px] justify-center h-9 pl-1.5 pr-2.5 font-semibold rounded-[8px] cursor-pointer transition-colors 
-             `
-            }
-              style={{backgroundColor: selectedTab === 'All' ? customization?.selectedPrimaryColor : "transparent", color: selectedTab === 'All' ? customization?.selectedBgColor : customization?.selectedTextColor }}
-              onClick={() => setSelectedTab('All')}
+             `}
+              style={{
+                backgroundColor:
+                  selectedTab === "All"
+                    ? customization?.selectedPrimaryColor
+                    : "transparent",
+                color:
+                  selectedTab === "All"
+                    ? customization?.selectedBgColor
+                    : customization?.selectedTextColor,
+              }}
+              onClick={() => setSelectedTab("All")}
             >
               <h2 className="text-[14px] mb-0">All</h2>
             </div>
           </div>
           {filteredCategories.map((item) => (
-            <div key={item.id} className="relative shadow-md rounded-xl border-gray-300 border inline-block ">
+            <div
+              key={item.id}
+              className="rounded-xl relative inline-block border border-gray-300 shadow-md"
+            >
               <div
                 onClick={() => setSelectedTab(item.name)}
-                className={`tab flex items-center  px-[35px] w-full justify-center h-9  font-semibold rounded-[8px] cursor-pointer transition-colors `
-              }
-              style={{backgroundColor: selectedTab === item.name ? customization?.selectedPrimaryColor : "transparent" }}
+                className={`tab flex items-center  px-[35px] w-full justify-center h-9  font-semibold rounded-[8px] cursor-pointer transition-colors `}
+                style={{
+                  backgroundColor:
+                    selectedTab === item.name
+                      ? customization?.selectedPrimaryColor
+                      : "transparent",
+                }}
               >
-                <h2 className="text-[14px] mb-0 whitespace-nowrap" style={{color: selectedTab === item.name ? customization?.selectedBgColor : customization?.selectedTextColor}}>{item.name}</h2>
+                <h2
+                  className="text-[14px] mb-0 whitespace-nowrap"
+                  style={{
+                    color:
+                      selectedTab === item.name
+                        ? customization?.selectedBgColor
+                        : customization?.selectedTextColor,
+                  }}
+                >
+                  {item.name}
+                </h2>
               </div>
             </div>
           ))}
         </div>
       </div>
       <MenuItems
-        dishes={dishes.length > 0 && dishes.filter(dish => selectedTab === 'All' || dish.categorie.name === selectedTab)}
+        dishes={
+          dishes.length > 0 &&
+          dishes.filter(
+            (dish) =>
+              selectedTab === "All" || dish.categorie.name === selectedTab
+          )
+        }
         restoId={resto}
         infoRes={infoRes}
         selectedTab={selectedTab}

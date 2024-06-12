@@ -1,16 +1,16 @@
-import { createSlice, configureStore } from '@reduxjs/toolkit';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
+import { createSlice, configureStore } from "@reduxjs/toolkit";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState: {
     user: null,
     token: null,
     restoInfo: null,
     isLoggedIn: false,
     isLoading: false,
-    error: null
+    error: null,
   },
   reducers: {
     loginSuccess: (state, action) => {
@@ -33,15 +33,16 @@ const authSlice = createSlice({
     },
     setError: (state, action) => {
       state.error = action.payload;
-    }
-  }
+    },
+  },
 });
 
 const { actions, reducer } = authSlice;
-export const { loginSuccess, setRestoInfo, logout, setLoading, setError } = actions;
+export const { loginSuccess, setRestoInfo, logout, setLoading, setError } =
+  actions;
 
 const persistConfig = {
-  key: 'auth',
+  key: "auth",
   storage,
 };
 
@@ -49,8 +50,8 @@ const persistedReducer = persistReducer(persistConfig, reducer);
 
 const store = configureStore({
   reducer: {
-    auth: persistedReducer
-  }
+    auth: persistedReducer,
+  },
 });
 
 export const persistor = persistStore(store);

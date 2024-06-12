@@ -1,8 +1,8 @@
 // src/features/restoSlice.js
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export const restoSlice = createSlice({
-  name: 'resto',
+  name: "resto",
   initialState: {
     info: {},
   },
