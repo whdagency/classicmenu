@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Home from "./Home/Home";
 import { Helmet } from "react-helmet";
 import { useMenu } from "./hooks/useMenu";
+import ThemeOne from "./themes/ThemeOne";
 
 function App() {
   const {
@@ -47,17 +48,18 @@ function App() {
             <Route
               path={`/menu/:restoSlug`}
               element={
-                <Home
-                  categories={categories}
-                  dishes={dishes}
-                  resInfo={resInfo}
-                  restoId={restos.id}
-                  filteredTheme={customization}
-                  restoSlug={restoSlug}
-                  restos={restos}
-                  selectedTab={selectedTab}
-                  setSelectedTab={setSelectedTab}
-                />
+                // <Home
+                //   categories={categories}
+                //   dishes={dishes}
+                //   resInfo={resInfo}
+                //   restoId={restos.id}
+                //   filteredTheme={customization}
+                //   restoSlug={restoSlug}
+                //   restos={restos}
+                //   selectedTab={selectedTab}
+                //   setSelectedTab={setSelectedTab}
+                // />
+                <ThemeOne />
               }
             />
             <Route

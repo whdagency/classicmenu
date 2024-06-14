@@ -362,7 +362,7 @@ function MenuItems({
                 photo={`${APIURL}/storage/${selectedItem.image}`}
                 className="p-0"
               />
-              <CredenzaBody className="sm:pb-0  mt-5 space-y-4 text-sm text-center">
+              <CredenzaBody className="sm:pb-0 mt-5 space-y-4 text-sm text-center">
                 <CredenzaTitle>{selectedItem.name}</CredenzaTitle>
                 <p className="text-neutral-400 flex items-center justify-center w-full m-0 text-center">
                   {selectedItem?.desc?.length > 20
@@ -404,7 +404,7 @@ function MenuItems({
                     width="30"
                     height="30"
                     fill="currentColor"
-                    className="bi bi-dot  mx-1"
+                    className="bi bi-dot mx-1"
                     viewBox="0 0 16 16"
                     style={{ color: customization?.selectedPrimaryColor }}
                   >
@@ -448,6 +448,7 @@ function MenuItems({
           )}
         </CredenzaContent>
       </Credenza>
+
       <AlertDialog>
         <AlertDialogTrigger
           asChild
