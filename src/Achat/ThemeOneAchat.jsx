@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { FiShoppingBag } from "react-icons/fi";
+import { FiMinus, FiPlus, FiShoppingBag } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
 import { useMenu } from "../hooks/useMenu";
 import {
@@ -41,6 +41,13 @@ const ThemeOneAchat = ({ activeLink }) => {
     (total, item) => total + item.price * item.quantity,
     0
   );
+
+  // tax calculation
+  const tax = 0.002;
+  const totalTax = totalCost * tax;
+
+  // total cost
+  const totalCostWithTax = totalCost + totalTax;
 
   const submitOrder = async (cartItems, totalCost) => {
     let cartItemProduct = cartItems.map((item) => ({
@@ -129,19 +136,25 @@ const ThemeOneAchat = ({ activeLink }) => {
       </SheetTrigger>
 
       <SheetContent className="scrollbar-hide w-full overflow-y-scroll">
-        <div className="dark:bg-gray-950 py-10 bg-white">
-          <div className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <h2 className="dark:text-gray-50 text-lg font-semibold text-gray-900">
-                Shopping Cart
-              </h2>
-
+        <div className="dark:bg-gray-950 pt-3 bg-white">
+          <section className="flex flex-col min-h-screen gap-4">
+            <div className="flex items-center justify-between pb-2 border-b border-gray-400">
+              <div className="flex items-center gap-2">
+                <h2 className="dark:text-gray-50 text-2xl font-extrabold text-gray-900">
+                  My Cart
+                </h2>
+                <div className="w-[1.5px] h-7 bg-gray-500" />
+                <span className="font-sans">
+                  {cartItems.length} {cartItems.length === 1 ? "item" : "items"}
+                </span>
+              </div>
               <Button
+                variant="link"
                 style={{
-                  backgroundColor: customization?.selectedPrimaryColor,
-                  //   color: customization?.selectedTextColor,
+                  // backgroundColor: customization?.selectedPrimaryColor,
+                  color: customization?.selectedTextColor,
                 }}
-                className="font-sans text-white"
+                className="font-sans text-black"
                 onClick={() => dispatch(removeAll())}
               >
                 Clear Cart
@@ -149,41 +162,58 @@ const ThemeOneAchat = ({ activeLink }) => {
             </div>
 
             {cartItems.length === 0 ? (
-              <p className="dark:text-gray-400 mt-2 text-center text-gray-600">
-                Your cart is empty.
-              </p>
+              <div className="flex flex-col items-center justify-center">
+                <img
+                  src="/assets/empty-cart.png"
+                  alt="empty-cart"
+                  className="object-contain w-full h-full mx-auto"
+                />
+                <p className="dark:text-gray-400 text-2xl text-center text-gray-900">
+                  Your cart is empty.
+                </p>
+              </div>
             ) : (
               <>
-                {cartItems.map((item) => (
-                  <CartItem key={item.id} item={item} infoRes={resInfo} />
-                ))}
+                <div className="flex flex-col w-full gap-5 pt-5 mb-auto">
+                  {cartItems.map((item) => (
+                    <CartItem key={item.id} item={item} infoRes={resInfo} />
+                  ))}
+                </div>
 
-                <div className="flex items-center justify-between mb-16">
-                  <p className="dark:text-gray-400 text-sm text-gray-700">
-                    Total:
-                    <span className="dark:text-gray-50 font-medium text-gray-900">
-                      {" "}
-                      {totalCost.toFixed(2) + " " + resInfo?.currency}
-                    </span>
-                  </p>
+                {/* Total & Checkout */}
+                <div className="border-t-gray-400 flex flex-col gap-2 pt-4 border-t">
+                  <div className="flex items-center justify-between font-sans text-sm font-medium text-gray-600">
+                    <p>Subtotal</p>
+                    <p>{`${totalCost.toFixed(2)} ${resInfo?.currency}`}</p>
+                  </div>
+                  <div className="flex items-center justify-between font-sans text-sm font-medium text-gray-600">
+                    <p>Tax</p>
+                    <p>{`${totalTax.toFixed(2)} ${resInfo?.currency}`}</p>
+                  </div>
+                  <div className="flex items-center justify-between text-xl font-bold text-black">
+                    <p className="uppercase">Total</p>
+                    <p>{`${totalCostWithTax.toFixed(2)} ${resInfo?.currency}`}</p>
+                  </div>
 
-                  <Button
-                    onClick={() =>
-                      setOrderSuccessModalOpen(!orderSuccessModalOpen)
-                    }
-                    style={{
-                      backgroundColor: customization?.selectedPrimaryColor,
-                      //   color: customization?.selectedTextColor,
-                    }}
-                    className="px-4 py-2 text-white rounded-lg"
-                    size="lg"
-                  >
-                    Checkout
-                  </Button>
+                  <div className="w-full mt-5">
+                    <Button
+                      style={{
+                        backgroundColor: customization?.selectedPrimaryColor,
+                      }}
+                      className="w-full px-4 py-2 font-semibold text-white rounded-full"
+                      size="lg"
+                      onClick={() =>
+                        setOrderSuccessModalOpen(!orderSuccessModalOpen)
+                      }
+                    >
+                      Checkout
+                    </Button>
+                  </div>
                 </div>
               </>
             )}
-          </div>
+          </section>
+
           <AlertDialog
             open={orderSuccessModalOpen}
             onOpenChange={setOrderSuccessModalOpen}
@@ -220,57 +250,33 @@ const CartItem = ({ item, infoRes }) => {
   const dispatch = useDispatch();
 
   return (
-    <div className="grid gap-4">
-      <div className="dark:bg-gray-800 flex items-center gap-2 p-4 bg-gray-100 rounded-lg">
-        <div className="hidden w-16 h-16 overflow-hidden rounded-md">
-          <img
-            alt={item.name}
-            className="object-cover w-full h-full"
-            height={64}
-            src={`${APIURL}/storage/${item.image}`}
-            style={{
-              aspectRatio: "64/64",
-              objectFit: "cover",
-            }}
-            width={64}
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <h3 className="dark:text-gray-50 text-base font-medium text-gray-900">
-            {item.name}
-          </h3>
-          <p className="dark:text-gray-400 text-sm text-gray-700">
-            {item.price + " " + infoRes.currency}
+    <div className="grid gap-4 font-sans">
+      <ul className="flex flex-col gap-2 list-disc">
+        <li className="flex items-center justify-between gap-2">
+          <p className="flex items-center gap-2 font-semibold">
+            <span className="text-sm">{item.quantity}x</span>
+            <span className="font-antic text-base">{item.name}</span>
           </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
+          <p className="font-antic text-base font-semibold">
+            {parseFloat(item.price * item.quantity).toFixed(2)}
+          </p>
+        </li>
+        <li className="flex items-center justify-between gap-2">
+          <button
             onClick={() => dispatch(decrementQuantity(item.id))}
-            size="icon"
-            variant="outline"
+            className="hover:bg-gray-200 flex items-center justify-center p-1 bg-gray-100 rounded-full"
           >
-            <MinusIcon className="w-4 h-4" />
-          </Button>
-          <span className="dark:text-gray-50 text-base font-medium text-gray-900">
-            {item.quantity}
-          </span>
-          <Button
+            <FiMinus size={15} className="text-gray-700" />
+          </button>
+
+          <button
             onClick={() => dispatch(incrementQuantity(item.id))}
-            size="icon"
-            variant="outline"
+            className="hover:bg-gray-200 flex items-center justify-center p-1 bg-gray-100 rounded-full"
           >
-            <PlusIcon className="w-4 h-4" />
-          </Button>
-        </div>
-        <Button
-          size="icon"
-          variant="outline"
-          onClick={() => dispatch(removeItem(item.id))}
-          className="text-red-500"
-        >
-          <TrashIcon className="w-4 h-4" />
-        </Button>
-      </div>
+            <FiPlus size={15} className="text-gray-700" />
+          </button>
+        </li>
+      </ul>
     </div>
   );
 };
@@ -335,3 +341,60 @@ const TrashIcon = (props) => {
     </svg>
   );
 };
+
+{
+  /* <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <h2 className="dark:text-gray-50 text-lg font-semibold text-gray-900">
+                Shopping Cart
+              </h2>
+
+              <Button
+                style={{
+                  backgroundColor: customization?.selectedPrimaryColor,
+                  //   color: customization?.selectedTextColor,
+                }}
+                className="font-sans text-white"
+                onClick={() => dispatch(removeAll())}
+              >
+                Clear Cart
+              </Button>
+            </div>
+
+            {cartItems.length === 0 ? (
+              <p className="dark:text-gray-400 mt-2 text-center text-gray-600">
+                Your cart is empty.
+              </p>
+            ) : (
+              <>
+                {cartItems.map((item) => (
+                  <CartItem key={item.id} item={item} infoRes={resInfo} />
+                ))}
+
+                <div className="flex items-center justify-between mb-16">
+                  <p className="dark:text-gray-400 text-sm text-gray-700">
+                    Total:
+                    <span className="dark:text-gray-50 font-medium text-gray-900">
+                      {" "}
+                      {totalCost.toFixed(2) + " " + resInfo?.currency}
+                    </span>
+                  </p>
+
+                  <Button
+                    onClick={() =>
+                      setOrderSuccessModalOpen(!orderSuccessModalOpen)
+                    }
+                    style={{
+                      backgroundColor: customization?.selectedPrimaryColor,
+                      //   color: customization?.selectedTextColor,
+                    }}
+                    className="px-4 py-2 text-white rounded-lg"
+                    size="lg"
+                  >
+                    Checkout
+                  </Button>
+                </div>
+              </>
+            )}
+          </div> */
+}
