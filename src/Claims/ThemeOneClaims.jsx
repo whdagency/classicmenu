@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import { useMenu } from "../hooks/useMenu";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   AlertDialog,
@@ -11,46 +10,64 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form.jsx";
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+
+import { Button } from "@/components/ui/button";
 import { axiosInstance } from "../axiosInstance";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Loader } from "lucide-react";
+import { Loader, X } from "lucide-react";
 import { TbMessage2Question } from "react-icons/tb";
 import { APIURL } from "../lib/ApiKey";
 
 // zod schema for the form
-const formSchema = z.object({
-  clamer_name: z.string().optional(),
-  description: z.string().min(1, "Message is Required").max(500),
-  infos: z.optional(z.string()),
-  anonymCheckBox: z.boolean().default(false),
-});
+const formSchema = z
+  .object({
+    clamer_name: z.string().optional(),
+    description: z.string().min(1, "Message is Required").max(500),
+    infos: z.optional(z.string()),
+    anonymCheckBox: z.boolean().default(false),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.anonymCheckBox && data.infos === "") {
+      ctx.addIssue({
+        code: "custom",
+        message: "Please enter your email or phone number",
+        path: ["infos"],
+      });
+    }
+
+    if (!data.anonymCheckBox && data.clamer_name === "") {
+      ctx.addIssue({
+        code: "custom",
+        message: "Please enter your name",
+        path: ["clamer_name"],
+      });
+    }
+  });
 
 const ThemeOneClaims = () => {
   const { restos: items, table_id } = useMenu();
-  const searchInputRef = useRef(null);
-
   const [orderSuccessModalOpen, setOrderSuccessModalOpen] = useState(false);
-  const [desc, setDesc] = useState("");
   const [anonymChecked, setAnonymChecked] = useState(false);
   const [disabled, setDisabled] = useState(false);
-  const toggleDisabled = () => {
-    setAnonymChecked(!anonymChecked); // Toggle checkbox state
-    setDisabled(!disabled); // Toggle disabled state
-  };
 
-  const form = useForm({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    getValues,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       clamer_name: "",
@@ -59,11 +76,11 @@ const ThemeOneClaims = () => {
       anonymCheckBox: false,
     },
   });
-  const {
-    setError,
-    formState: { isSubmitting },
-    reset,
-  } = form;
+
+  const toggleDisabled = () => {
+    setAnonymChecked(!anonymChecked); // Toggle checkbox state
+    setDisabled(!disabled); // Toggle disabled state
+  };
 
   // submit claim
   const onSubmit = async (data) => {
@@ -109,127 +126,135 @@ const ThemeOneClaims = () => {
   };
 
   return (
-    <Dialog>
-      <DialogTrigger className="flex items-center justify-center gap-1.5 bg-transparent hover:bg-transparent">
-        <TbMessage2Question size={25} className="text-white" />
-        <span className="text-xs font-medium text-white">Claims</span>
-      </DialogTrigger>
+    <>
+      <Drawer>
+        <DrawerTrigger className="flex items-center justify-center gap-1.5 bg-transparent hover:bg-transparent">
+          <TbMessage2Question size={25} className="text-white" />
+          <span className="text-xs font-medium text-white">Claims</span>
+        </DrawerTrigger>
 
-      <DialogContent className="scrollbar-hide flex flex-col items-center justify-center h-full overflow-y-scroll">
-        <div className="w-full h-full max-w-md p-6 rounded-lg">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h1 className="md:text-5xl lg:text-6xl dark:text-white mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900">
-                Make A{" "}
-                <span className="underline underline-offset-3 decoration-8 decoration-[#28509E] dark:decoration-blue-600">
-                  Claims
-                </span>
-              </h1>
-              <div className="flex items-center space-x-2">
-                <button className="hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 p-2 rounded-full">
-                  <SmileIcon className="dark:text-gray-400 w-5 h-5 text-gray-500" />
-                </button>
-              </div>
-            </div>
-            <p className="dark:text-gray-400 text-gray-600">
-              Tell us about your recent experience at our restaurant.
-            </p>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)}>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <FormField
-                      control={form.control}
-                      name="clamer_name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Name (optional)</FormLabel>
-                          <FormControl>
-                            <input
-                              className={cn(
-                                "flex h-10 w-full rounded-[.5rem] border border-input bg-background px-3 placeholder:text-sm py-2 ring-offset-background file:border-0 file:bg-transparent file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                              )}
-                              ref={searchInputRef}
-                              disabled={disabled}
-                              placeholder="Enter your name"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <FormField
-                      control={form.control}
-                      name="infos"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-nowrap">
-                            Email or phone(optional)
-                          </FormLabel>
-                          <FormControl>
-                            <input
-                              className={cn(
-                                "flex h-10 w-full rounded-[.5rem] border border-input bg-background px-3 py-2 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 placeholder:text-sm"
-                              )}
-                              ref={searchInputRef}
-                              disabled={disabled}
-                              placeholder="Email or phone...."
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className=" col-span-2">
-                    <FormField
-                      control={form.control}
-                      name="anonymCheckBox"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-row items-start mb-4 space-x-2 space-y-0 border-0 rounded-md">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={(value) => {
-                                field.onChange(value);
-                                toggleDisabled();
-                              }}
-                            />
-                          </FormControl>
-                          <div className="leading-none">
-                            <FormLabel>Submit feedback anonymously</FormLabel>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
+        <DrawerContent className="scrollbar-hide ms-auto flex flex-col items-center justify-center w-full h-full max-w-md max-h-screen">
+          <DrawerClose className="right-5 top-5 absolute z-10 flex items-center justify-center w-8 h-8 p-1 border border-gray-500 rounded-full">
+            <X size={20} className="text-gray-500" />
+          </DrawerClose>
+
+          <div className="scrollbar-hide w-full h-screen max-w-md p-6 overflow-y-scroll rounded-lg">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-black/10 flex items-center justify-center w-16 h-16 p-2 rounded-full">
+                  <img
+                    src="/assets/complaint.svg"
+                    alt="Complait"
+                    className="object-cover w-full h-full rounded-full"
+                  />
                 </div>
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <textarea
-                          className={cn(
-                            "flex min-h-[180px]  w-full bg-gray-100 text-gray-900 rounded-md border border-gray-300 px-3 py-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
-                          )}
-                          placeholder="Write your thoughts here..."
-                          value={desc}
-                          onChange={(e) => setDesc(e.target.value)}
-                          rows={5}
-                          ref={searchInputRef}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <h2 className="text-3xl font-bold text-black">Make A Claim</h2>
+              </div>
+              <p className="dark:text-gray-400 text-center text-gray-800">
+                Tell us about your recent experience at our restaurant.
+              </p>
+
+              <form
+                method="post"
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex flex-col gap-5"
+              >
+                <div
+                  className={`relative w-full ${disabled ? "bg-gray-100" : "bg-gray-200"} rounded`}
+                >
+                  <input
+                    type="text"
+                    name="clamer_name"
+                    id="clamer_name"
+                    disabled={disabled}
+                    {...register("clamer_name", {
+                      required: disabled ? false : true,
+                    })}
+                    className="peer focus:outline-none focus:ring-0 focus:border-0 dark:text-gray-300 block w-full py-3 pl-3 pr-10 text-sm text-gray-700 placeholder-transparent bg-transparent border-0 rounded-md"
+                    placeholder="your name"
+                  />
+                  <label
+                    htmlFor="clamer_name"
+                    className={`left-4 top-1/2 peer-focus:top-0 peer-focus:left-2 peer-focus:text-xs peer-focus:text-gray-700 absolute text-sm font-medium text-gray-700 transition-all transform -translate-y-1/2 ${watch("clamer_name") !== "" ? "-top-0 left-2 text-xs text-gray-700" : ""}`}
+                  >
+                    Name (optional)
+                  </label>
+                </div>
+                {errors.clamer_name && !getValues("anonymCheckBox") && (
+                  <p className="-mt-4 text-sm text-red-600">
+                    {errors.clamer_name?.message}
+                  </p>
+                )}
+
+                <div
+                  className={`relative w-full ${disabled ? "bg-gray-100" : "bg-gray-200"} rounded`}
+                >
+                  <input
+                    type="text"
+                    name="infos"
+                    id="infos"
+                    disabled={disabled}
+                    {...register("infos", {
+                      required: disabled ? false : true,
+                    })}
+                    className="peer focus:outline-none focus:ring-0 focus:border-0 dark:text-gray-300 block w-full py-3 pl-3 pr-10 text-sm text-gray-700 placeholder-transparent bg-transparent border-0 rounded-md"
+                    placeholder="Email or phone"
+                  />
+                  <label
+                    htmlFor="infos"
+                    className={`left-4 top-1/2 peer-focus:top-0 peer-focus:left-2 peer-focus:text-xs peer-focus:text-gray-700 absolute text-sm font-medium text-gray-700 transition-all transform -translate-y-1/2 ${watch("infos") !== "" ? "-top-0 left-2 text-xs text-gray-700" : ""}`}
+                  >
+                    Email or phone
+                  </label>
+                </div>
+                {errors.infos && !getValues("anonymCheckBox") && (
+                  <p className="-mt-4 text-sm text-red-600">
+                    {errors.infos?.message}
+                  </p>
+                )}
+
+                <div className="relative flex items-center w-full gap-2 rounded">
+                  <Checkbox
+                    checked={getValues("anonymCheckBox")}
+                    {...register("anonymCheckBox")}
+                    onCheckedChange={(value) => {
+                      setValue("anonymCheckBox", value);
+                      toggleDisabled();
+                    }}
+                    name="anonymCheckBox"
+                    id="anonymCheckBox"
+                  />
+                  <label
+                    htmlFor="anonymCheckBox"
+                    className="text-sm text-gray-700"
+                  >
+                    Submit feedback anonymously
+                  </label>
+                </div>
+
+                <div className="relative w-full px-4 py-2 bg-gray-200 rounded">
+                  <textarea
+                    rows={5}
+                    type="text"
+                    name="description"
+                    id="description"
+                    {...register("description")}
+                    className="peer block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-sm text-gray-700 placeholder-transparent focus:outline-none focus:ring-0 focus:border-0 dark:text-gray-300 bg-transparent"
+                    placeholder="Write your thoughts here..."
+                  />
+                  <label
+                    htmlFor="description"
+                    className={`left-4 top-1/2 peer-focus:top-0 peer-focus:left-2 peer-focus:text-xs peer-focus:text-gray-700 absolute text-sm font-medium text-gray-700 transition-all transform -translate-y-1/2 ${watch("description") !== "" ? "-top-0 left-2 text-xs text-gray-700" : ""}`}
+                  >
+                    Write your thoughts here...
+                  </label>
+                </div>
+                {errors.description && (
+                  <p className="-mt-4 text-sm text-red-600">
+                    {errors.description?.message}
+                  </p>
+                )}
+
                 <div className="flex items-center justify-between">
                   <Button
                     className="hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:bg-gray-600 dark:hover:bg-gray-500 dark:focus:ring-offset-gray-800 px-4 py-2 my-4 font-medium text-white bg-gray-900 rounded-md"
@@ -241,39 +266,47 @@ const ThemeOneClaims = () => {
                     )}{" "}
                     Submit Feedback
                   </Button>
+
+                  <Button
+                    className="hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:bg-gray-600 dark:hover:bg-gray-500 dark:focus:ring-offset-gray-800 px-4 py-2 my-4 font-medium text-white bg-gray-900 rounded-md"
+                    type="button"
+                    onClick={() => reset()}
+                  >
+                    Reset
+                  </Button>
                 </div>
               </form>
-            </Form>
 
-            <AlertDialog
-              open={orderSuccessModalOpen}
-              onOpenChange={setOrderSuccessModalOpen}
-            >
-              <AlertDialogContent className="w-[80%] rounded-lg">
-                <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    Your claim has been successfully submitted
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Thank you for your Claim!
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogAction
-                    autoFocus
-                    onClick={() =>
-                      setOrderSuccessModalOpen(!orderSuccessModalOpen)
-                    }
-                  >
-                    Ok
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+              <AlertDialog
+                open={orderSuccessModalOpen}
+                onOpenChange={setOrderSuccessModalOpen}
+              >
+                <AlertDialogContent className="w-[80%] rounded-lg">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Your claim has been successfully submitted
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Thank you for your Claim!
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogAction
+                      autoFocus
+                      onClick={() =>
+                        setOrderSuccessModalOpen(!orderSuccessModalOpen)
+                      }
+                    >
+                      Ok
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DrawerContent>
+      </Drawer>
+    </>
   );
 };
 
