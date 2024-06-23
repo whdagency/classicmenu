@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -8,7 +8,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogDescription,
-  AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import { useMenu } from "../hooks/useMenu";
 import { APIURL } from "../lib/ApiKey";
@@ -75,23 +74,45 @@ export default ThemeOneFooter;
 // call a waiter
 const CallWaiter = ({ customization, submitOrder, submitBill }) => {
   const [openWaiterModal, setOpenWaiterModal] = useState(false);
+  const modalRef = useRef();
+
+  const handleClickOutside = (event) => {
+    if (modalRef.current && !modalRef.current.contains(event.target)) {
+      setOpenWaiterModal(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <section>
+    <section ref={modalRef}>
       <Button
         onClick={() => setOpenWaiterModal((prev) => !prev)}
         className="flex items-center justify-center w-12 h-12 rounded-full shadow-lg"
         size="icon"
         style={{ backgroundColor: customization?.selectedPrimaryColor }}
+        id="call-waiter-button"
       >
         <img
           src={"/assets/waiter-icon.svg"}
           alt="Waiter Icon"
           className="w-8 h-8"
+          id="call-waiter-button-img"
         />
       </Button>
 
       <div
-        className={`flex flex-col ${openWaiterModal ? "transition-transform scale-100 translate-y-0 duration-500" : "transition-transform scale-0 duration-500 translate-y-20"} shadow items-center justify-center gap-3 py-5 px-10 w-[95%] md:w-[80%] mx-auto bg-black/70 absolute bottom-14 left-1/2 transform -translate-x-1/2 rounded-t-full`}
+        className={`flex flex-col ${
+          openWaiterModal
+            ? "transition-transform scale-100 translate-y-0 duration-500"
+            : "transition-transform scale-0 duration-500 translate-y-20"
+        } shadow items-center justify-center gap-3 py-5 px-10 w-[95%] md:w-[80%] mx-auto bg-black/70 absolute bottom-14 left-1/2 transform -translate-x-1/2 rounded-t-full`}
       >
         <div className="flex items-center justify-center w-full gap-1 mt-2 font-sans">
           <div className="flex flex-row items-center justify-center gap-5">
