@@ -144,7 +144,7 @@ const ThemeOneAchat = ({ activeLink }) => {
                   My Cart
                 </h2>
                 <div className="w-[1.5px] h-7 bg-gray-500" />
-                <span className="font-sans">
+                <span className="font-thic">
                   {cartItems.length} {cartItems.length === 1 ? "item" : "items"}
                 </span>
               </div>
@@ -154,7 +154,7 @@ const ThemeOneAchat = ({ activeLink }) => {
                   // backgroundColor: customization?.selectedPrimaryColor,
                   color: customization?.selectedTextColor,
                 }}
-                className="font-sans text-black"
+                className="font-thic text-black"
                 onClick={() => dispatch(removeAll())}
               >
                 Clear Cart
@@ -182,11 +182,11 @@ const ThemeOneAchat = ({ activeLink }) => {
 
                 {/* Total & Checkout */}
                 <div className="border-t-gray-400 flex flex-col gap-2 pt-4 border-t">
-                  <div className="flex items-center justify-between font-sans text-sm font-medium text-gray-600">
+                  <div className="flex items-center justify-between font-thic text-sm font-medium text-gray-600">
                     <p>Subtotal</p>
                     <p>{`${totalCost.toFixed(2)} ${resInfo?.currency}`}</p>
                   </div>
-                  <div className="flex items-center justify-between font-sans text-sm font-medium text-gray-600">
+                  <div className="flex items-center justify-between font-thic text-sm font-medium text-gray-600">
                     <p>Tax</p>
                     <p>{`${totalTax.toFixed(2)} ${resInfo?.currency}`}</p>
                   </div>
@@ -250,14 +250,14 @@ const CartItem = ({ item, infoRes }) => {
   const dispatch = useDispatch();
 
   return (
-    <div className="grid gap-4 font-sans">
+    <div className="grid gap-4 font-thic">
       <ul className="flex flex-col gap-2 list-disc">
         <li className="flex items-center justify-between gap-2">
           <p className="flex items-center gap-2 font-semibold">
             <span className="text-sm">{item.quantity}x</span>
-            <span className="font-antic text-base">{item.name}</span>
+            <span className="font-thic text-base">{item.name}</span>
           </p>
-          <p className="font-antic text-base font-semibold">
+          <p className="font-thic text-base font-semibold">
             {parseFloat(item.price * item.quantity).toFixed(2)}
           </p>
         </li>
@@ -354,7 +354,7 @@ const TrashIcon = (props) => {
                   backgroundColor: customization?.selectedPrimaryColor,
                   //   color: customization?.selectedTextColor,
                 }}
-                className="font-sans text-white"
+                className="font-thic text-white"
                 onClick={() => dispatch(removeAll())}
               >
                 Clear Cart

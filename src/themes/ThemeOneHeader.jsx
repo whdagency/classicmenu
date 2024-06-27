@@ -26,7 +26,7 @@ const ThemeOneHeader = () => {
           className="hidden object-contain w-10 h-10"
           onError={(e) => (e.target.src = "/assets/placeholder-image.png")}
         />
-        <span className="font-antic md:text-2xl text-xl text-black">
+        <span className="font-thic md:text-2xl text-xl text-black">
           {restos.name || "Garista"}
         </span>
       </Link>

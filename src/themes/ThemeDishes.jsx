@@ -12,7 +12,6 @@ import {
   CredenzaFooter,
   CredenzaHeader,
   CredenzaTitle,
-  CredenzaTrigger,
 } from "@/components/ui/credenza";
 import { Button } from "@/components/ui/button";
 import { useMenu } from "../hooks/useMenu";
@@ -28,7 +27,7 @@ const ThemeDishes = ({ category, dishes }) => {
   return (
     <>
       <AccordionItem value={category.id}>
-        <AccordionTrigger className="hover:bg-black hover:no-underline font-antic flex flex-row items-center justify-between w-full px-3 py-2 text-white uppercase bg-black rounded">
+        <AccordionTrigger className="hover:bg-black hover:no-underline font-thic flex flex-row items-center justify-between w-full px-3 py-2 text-white uppercase bg-black rounded">
           {category.name}
         </AccordionTrigger>
 
@@ -43,13 +42,13 @@ const ThemeDishes = ({ category, dishes }) => {
               className="hover:bg-black/5 flex flex-col gap-2 p-2 cursor-pointer"
             >
               <div className="border-b-black/40 last:border-b-0 flex items-center justify-between border-b">
-                <h3 className="font-antic font-medium">{dish.name}</h3>
-                <p className="font-antic font-medium">
+                <h3 className="font-thic font-medium">{dish.name}</h3>
+                <p className="font-thic font-medium">
                   {dish.price} {resInfo.currency || "MAD"}
                 </p>
               </div>
 
-              <p className="text-black/60 font-antic text-sm font-light">
+              <p className="text-black/60 font-thic text-sm font-light">
                 {dish.desc}
               </p>
             </div>
@@ -167,7 +166,7 @@ const AddDishToCart = ({ isModalOpen, setIsModalOpen, selectedItem }) => {
                     setAddToCartClicked(false);
                   }, 1000);
                 }}
-                className={`rounded-[1rem] p-2 transition-all duration-300 border font-medium text-xs md:text-sm flex items-center justify-center gap-1 md:w-[300px]`}
+                className={`rounded-lg p-2 transition-all duration-300 border font-medium text-xs md:text-sm flex items-center justify-center gap-1 md:w-[300px]`}
                 style={{
                   backgroundColor: customization?.selectedPrimaryColor,
                 }}

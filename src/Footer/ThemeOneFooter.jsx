@@ -14,10 +14,27 @@ import { APIURL } from "../lib/ApiKey";
 import ThemeOneRating from "../Rating/ThemeOneRating";
 import ThemeOneClaims from "../Claims/ThemeOneClaims";
 import { X } from "lucide-react";
+import { useSelector } from "react-redux";
 
 const ThemeOneFooter = () => {
   const { customization, table_id, restos, restoSlug } = useMenu();
-  const [openSubmitBillModal, setOpenSubmitBillModal] = useState(false);
+  const [openSubmitItemModal, setOpenSubmitItemModal] = useState({
+    open: false,
+    title: "",
+    description: "",
+  });
+
+  // get resto id
+  const resto_id = restos.id;
+
+  // get cart items and total cost
+  const cartItems = useSelector((state) =>
+    state.cart.items.filter((item) => item.resto_id === resto_id)
+  );
+  const totalCost = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
 
   // submit bill
   const submitBill = async () => {
@@ -25,7 +42,7 @@ const ThemeOneFooter = () => {
       const notification = {
         title: "Asking For Bill",
         status: "Bill",
-        resto_id: restos.id,
+        resto_id: resto_id,
         table_id: table_id,
       };
       const responseNotification = await fetch(`${APIURL}/api/notifications`, {
@@ -39,8 +56,58 @@ const ThemeOneFooter = () => {
       if (responseNotification) {
         console.log("Nice => ", responseNotification);
 
-        setOpenSubmitBillModal(true);
+        setOpenSubmitItemModal({
+          open: true,
+          title: "Bill Requested!",
+          description: "The bill will be sent to you shortly.",
+        });
       }
+      // Handle post-order submission logic here, like clearing the cart or redirecting the user
+    } catch (error) {
+      console.error("Failed to submit order:", error.message);
+    }
+  };
+
+  // submit order
+  const submitOrder = async () => {
+    const cartItemProduct = cartItems.map((item) => {
+      return {
+        type: item.type,
+        id: item.id,
+        quantity: item.quantity,
+      };
+    });
+
+    const order = {
+      total: totalCost,
+      status: "new",
+      table_id: table_id,
+      resto_id: resto_id,
+      cartItems: cartItemProduct,
+    };
+
+    try {
+      const response = await fetch(`${APIURL}/api/order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(order),
+      });
+
+      if (!response.ok) {
+        const errorResponse = await response.text();
+        throw new Error(`HTTP error ${response.status}: ${errorResponse}`);
+      }
+
+      const responseData = await response.json();
+      console.log("Order submitted:", order, cartItemProduct, responseData);
+
+      setOpenSubmitItemModal({
+        open: true,
+        title: "Order Submitted!",
+        description: "Your order has been successfully submitted.",
+      });
       // Handle post-order submission logic here, like clearing the cart or redirecting the user
     } catch (error) {
       console.error("Failed to submit order:", error.message);
@@ -54,16 +121,16 @@ const ThemeOneFooter = () => {
 
         <CallWaiter
           customization={customization}
-          submitOrder={null}
+          submitOrder={submitOrder}
           submitBill={submitBill}
         />
 
         <ThemeOneClaims />
       </div>
 
-      <SubmitBillModal
-        openSubmitBillModal={openSubmitBillModal}
-        setOpenSubmitBillModal={setOpenSubmitBillModal}
+      <SubmitItemModal
+        openSubmitItemModal={openSubmitItemModal}
+        setOpenSubmitItemModal={setOpenSubmitItemModal}
       />
     </footer>
   );
@@ -114,7 +181,7 @@ const CallWaiter = ({ customization, submitOrder, submitBill }) => {
             : "transition-transform scale-0 duration-500 translate-y-20"
         } shadow items-center justify-center gap-3 py-5 px-10 w-[95%] md:w-[80%] mx-auto bg-black/70 absolute bottom-14 left-1/2 transform -translate-x-1/2 rounded-t-full`}
       >
-        <div className="flex items-center justify-center w-full gap-1 mt-2 font-sans">
+        <div className="font-thic flex items-center justify-center w-full gap-1 mt-2">
           <div className="flex flex-row items-center justify-center gap-5">
             <div className="flex flex-col items-center justify-center gap-2">
               <Button
@@ -161,24 +228,28 @@ const CallWaiter = ({ customization, submitOrder, submitBill }) => {
   );
 };
 
-const SubmitBillModal = ({ openSubmitBillModal, setOpenSubmitBillModal }) => {
+const SubmitItemModal = ({ openSubmitItemModal, setOpenSubmitItemModal }) => {
   return (
     <AlertDialog
-      open={openSubmitBillModal}
-      onOpenChange={setOpenSubmitBillModal}
+      open={openSubmitItemModal.open}
+      // onOpenChange={() =>
+      //   setOpenSubmitItemModal((prev) => ({ ...prev, open: !prev.open }))
+      // }
     >
       <AlertDialogContent className="w-[80%] rounded-lg">
         <AlertDialogHeader>
-          <AlertDialogTitle>Bill Requested!</AlertDialogTitle>
+          <AlertDialogTitle>{openSubmitItemModal.title}</AlertDialogTitle>
           <AlertDialogDescription>
-            The bill will be sent to you shortly. <br /> Thank you for using our
+            {openSubmitItemModal.description} <br /> Thank you for using our
             service.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogAction
             autoFocus
-            onClick={() => setOpenSubmitBillModal((prev) => !prev)}
+            onClick={() =>
+              setOpenSubmitItemModal((prev) => ({ ...prev, open: !prev.open }))
+            }
           >
             Ok
           </AlertDialogAction>

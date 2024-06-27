@@ -2,13 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 @font-face {
-  font-family: "AnticDidone-Regular";
-  src: url("/fonts/Chic/AnticDidone-Regular.ttf") format("truetype");
+  font-family: "THICCCBOI-BOLD";
+  src: url("/fonts/Webfont/THICCCBOI-Medium.woff2") format("woff2");
   font-style: normal;
 }
+
 body {
   background-color: #fbfbfb;
-  font-family: "AnticDidone-Regular", sans-serif;
+  font-family: "THICCCBOI-BOLD", sans-serif;
 }
 
 @layer base {

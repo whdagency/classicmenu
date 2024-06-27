@@ -18,7 +18,7 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        antic: ["AnticDidone-Regular", "sans-serif", "serif"],
+        thic: ["THICCCBOI-BOLD", "sans-serif", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
