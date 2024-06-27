@@ -16,7 +16,12 @@ const ThemeOne = () => {
   };
 
   return (
-    <section className="bg-black/70 flex flex-col items-center justify-center min-h-screen">
+    <section
+      style={{
+        color: customization?.selectedTextColor,
+      }}
+      className="bg-black/70 flex flex-col items-center justify-center min-h-screen"
+    >
       <div
         style={{ backgroundColor: customization.selectedBgColor }}
         className="max-w-2xl md:shadow md:h-[95vh] w-full md:overflow-y-scroll oveflow-x-hidden scrollbar-hide pb-20 relative"

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { FiMinus, FiPlus, FiShoppingBag } from "react-icons/fi";
+import { FiMinus, FiPlus, FiShoppingBag, FiTrash } from "react-icons/fi";
 import { useSelector, useDispatch } from "react-redux";
 import { useMenu } from "../hooks/useMenu";
 import {
@@ -42,13 +42,6 @@ const ThemeOneAchat = ({ activeLink }) => {
     0
   );
 
-  // tax calculation
-  const tax = 0.002;
-  const totalTax = totalCost * tax;
-
-  // total cost
-  const totalCostWithTax = totalCost + totalTax;
-
   const submitOrder = async (cartItems, totalCost) => {
     let cartItemProduct = cartItems.map((item) => ({
       type: item.type, // Assuming all items are dishes
@@ -64,7 +57,7 @@ const ThemeOneAchat = ({ activeLink }) => {
       cartItems: cartItemProduct,
     };
 
-    console.log("The orde is ", order);
+    console.log("The order is ", order);
 
     try {
       const response = await fetch(`${APIURL}/api/order`, {
@@ -116,6 +109,7 @@ const ThemeOneAchat = ({ activeLink }) => {
     }
   };
 
+  console.log({ customization });
   return (
     <Sheet>
       <SheetTrigger>
@@ -129,7 +123,13 @@ const ThemeOneAchat = ({ activeLink }) => {
             }}
             className="text-white"
           />
-          <span className="absolute -right-1.5 -top-1 bg-primary-blue size-5 grid place-content-center rounded-full text-white text-[10px] leading-3">
+          <span
+            style={{
+              backgroundColor: customization?.selectedPrimaryColor,
+              color: customization?.selectedSecondaryColor,
+            }}
+            className="absolute -right-1.5 -top-1 size-5 grid place-content-center rounded-full text-white text-[10px] leading-3"
+          >
             {cartItems.length}
           </span>
         </p>
@@ -144,7 +144,7 @@ const ThemeOneAchat = ({ activeLink }) => {
                   My Cart
                 </h2>
                 <div className="w-[1.5px] h-7 bg-gray-500" />
-                <span className="font-thic">
+                <span className="">
                   {cartItems.length} {cartItems.length === 1 ? "item" : "items"}
                 </span>
               </div>
@@ -154,7 +154,7 @@ const ThemeOneAchat = ({ activeLink }) => {
                   // backgroundColor: customization?.selectedPrimaryColor,
                   color: customization?.selectedTextColor,
                 }}
-                className="font-thic text-black"
+                className=""
                 onClick={() => dispatch(removeAll())}
               >
                 Clear Cart
@@ -181,18 +181,15 @@ const ThemeOneAchat = ({ activeLink }) => {
                 </div>
 
                 {/* Total & Checkout */}
-                <div className="border-t-gray-400 flex flex-col gap-2 pt-4 border-t">
-                  <div className="flex items-center justify-between font-thic text-sm font-medium text-gray-600">
+                <div className="border-t-gray-400 flex flex-col gap-3 pt-4 border-t">
+                  <div className=" flex items-center justify-between text-xs font-medium text-gray-600">
                     <p>Subtotal</p>
                     <p>{`${totalCost.toFixed(2)} ${resInfo?.currency}`}</p>
                   </div>
-                  <div className="flex items-center justify-between font-thic text-sm font-medium text-gray-600">
-                    <p>Tax</p>
-                    <p>{`${totalTax.toFixed(2)} ${resInfo?.currency}`}</p>
-                  </div>
+
                   <div className="flex items-center justify-between text-xl font-bold text-black">
                     <p className="uppercase">Total</p>
-                    <p>{`${totalCostWithTax.toFixed(2)} ${resInfo?.currency}`}</p>
+                    <p>{`${totalCost.toFixed(2)} ${resInfo?.currency}`}</p>
                   </div>
 
                   <div className="w-full mt-5">
@@ -200,7 +197,7 @@ const ThemeOneAchat = ({ activeLink }) => {
                       style={{
                         backgroundColor: customization?.selectedPrimaryColor,
                       }}
-                      className="w-full px-4 py-2 font-semibold text-white rounded-full"
+                      className="w-full px-4 py-2 font-semibold text-white rounded-lg"
                       size="lg"
                       onClick={() =>
                         setOrderSuccessModalOpen(!orderSuccessModalOpen)
@@ -248,99 +245,115 @@ export default ThemeOneAchat;
 
 const CartItem = ({ item, infoRes }) => {
   const dispatch = useDispatch();
+  const { customization } = useMenu();
 
   return (
-    <div className="grid gap-4 font-thic">
-      <ul className="flex flex-col gap-2 list-disc">
-        <li className="flex items-center justify-between gap-2">
-          <p className="flex items-center gap-2 font-semibold">
-            <span className="text-sm">{item.quantity}x</span>
-            <span className="font-thic text-base">{item.name}</span>
+    <div className="grid gap-4">
+      <div className="flex flex-col gap-4 list-disc">
+        <div className="flex flex-row items-center justify-between gap-3">
+          <p className="text-start flex items-center col-span-1 gap-2 font-medium">
+            <span className="text-sm">{item.name}</span>
           </p>
-          <p className="font-thic text-base font-semibold">
-            {parseFloat(item.price * item.quantity).toFixed(2)}
-          </p>
-        </li>
-        <li className="flex items-center justify-between gap-2">
-          <button
-            onClick={() => dispatch(decrementQuantity(item.id))}
-            className="hover:bg-gray-200 flex items-center justify-center p-1 bg-gray-100 rounded-full"
-          >
-            <FiMinus size={15} className="text-gray-700" />
-          </button>
 
-          <button
-            onClick={() => dispatch(incrementQuantity(item.id))}
-            className="hover:bg-gray-200 flex items-center justify-center p-1 bg-gray-100 rounded-full"
-          >
-            <FiPlus size={15} className="text-gray-700" />
-          </button>
-        </li>
-      </ul>
+          <div className="flex items-center justify-center col-span-1 gap-2">
+            <button
+              onClick={() => dispatch(decrementQuantity(item.id))}
+              className="hover:bg-gray-200 flex items-center justify-center p-1 bg-gray-100 rounded"
+            >
+              <FiMinus size={12} className="text-gray-700" />
+            </button>
+
+            <p
+              style={{ color: customization?.selectedTextColor }}
+              className="text-base"
+            >
+              {item.quantity}
+            </p>
+
+            <button
+              onClick={() => dispatch(incrementQuantity(item.id))}
+              className="hover:bg-gray-200 flex items-center justify-center p-1 bg-gray-100 rounded"
+            >
+              <FiPlus size={12} className="text-gray-700" />
+            </button>
+          </div>
+
+          <div className=" flex items-center col-span-1 gap-3 text-base font-medium">
+            <p className="text-sm">
+              {parseFloat(item.price * item.quantity).toFixed(2)}{" "}
+              {infoRes?.currency}
+            </p>
+
+            <button onClick={() => dispatch(removeItem(item.id))}>
+              <FiTrash size={12} className="text-red-500" />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
-// icons
-const MinusIcon = (props) => {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M5 12h14" />
-    </svg>
-  );
-};
+// // icons
+// const MinusIcon = (props) => {
+//   return (
+//     <svg
+//       {...props}
+//       xmlns="http://www.w3.org/2000/svg"
+//       width="24"
+//       height="24"
+//       viewBox="0 0 24 24"
+//       fill="none"
+//       stroke="currentColor"
+//       strokeWidth="2"
+//       strokeLinecap="round"
+//       strokeLinejoin="round"
+//     >
+//       <path d="M5 12h14" />
+//     </svg>
+//   );
+// };
 
-const PlusIcon = (props) => {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M5 12h14" />
-      <path d="M12 5v14" />
-    </svg>
-  );
-};
+// const PlusIcon = (props) => {
+//   return (
+//     <svg
+//       {...props}
+//       xmlns="http://www.w3.org/2000/svg"
+//       width="24"
+//       height="24"
+//       viewBox="0 0 24 24"
+//       fill="none"
+//       stroke="currentColor"
+//       strokeWidth="2"
+//       strokeLinecap="round"
+//       strokeLinejoin="round"
+//     >
+//       <path d="M5 12h14" />
+//       <path d="M12 5v14" />
+//     </svg>
+//   );
+// };
 
-const TrashIcon = (props) => {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M3 6h18" />
-      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-    </svg>
-  );
-};
+// const TrashIcon = (props) => {
+//   return (
+//     <svg
+//       {...props}
+//       xmlns="http://www.w3.org/2000/svg"
+//       width="24"
+//       height="24"
+//       viewBox="0 0 24 24"
+//       fill="none"
+//       stroke="currentColor"
+//       strokeWidth="2"
+//       strokeLinecap="round"
+//       strokeLinejoin="round"
+//     >
+//       <path d="M3 6h18" />
+//       <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+//       <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+//     </svg>
+//   );
+// };
 
 {
   /* <div className="flex flex-col gap-4">
@@ -354,7 +367,7 @@ const TrashIcon = (props) => {
                   backgroundColor: customization?.selectedPrimaryColor,
                   //   color: customization?.selectedTextColor,
                 }}
-                className="font-thic text-white"
+                className=" text-white"
                 onClick={() => dispatch(removeAll())}
               >
                 Clear Cart

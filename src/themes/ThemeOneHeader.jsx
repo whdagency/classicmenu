@@ -19,14 +19,14 @@ const ThemeOneHeader = () => {
         className="flex items-center gap-2 font-bold"
         style={{ color: customization?.selectedPrimaryColor }}
       >
-        <img
+        {/* <img
           src={`${APIURL}/storage/${resInfo.logo}`}
           alt={restos.name}
           loading="lazy"
           className="hidden object-contain w-10 h-10"
           onError={(e) => (e.target.src = "/assets/placeholder-image.png")}
-        />
-        <span className="font-thic md:text-2xl text-xl text-black">
+        /> */}
+        <span className=" md:text-2xl text-xl text-black">
           {restos.name || "Garista"}
         </span>
       </Link>
@@ -46,20 +46,20 @@ const ThemeOneHeader = () => {
 
 export default ThemeOneHeader;
 
-const NavLink = ({ to, activeLink, icon: Icon }) => {
-  const { customization } = useMenu();
+// const NavLink = ({ to, activeLink, icon: Icon }) => {
+//   const { customization } = useMenu();
 
-  return (
-    <Link to={to}>
-      <Icon
-        size={30}
-        style={{
-          color: activeLink
-            ? customization?.selectedPrimaryColor
-            : customization?.selectedSecondaryColor,
-        }}
-        className="text-white"
-      />
-    </Link>
-  );
-};
+//   return (
+//     <Link to={to}>
+//       <Icon
+//         size={30}
+//         style={{
+//           color: activeLink
+//             ? customization?.selectedPrimaryColor
+//             : customization?.selectedSecondaryColor,
+//         }}
+//         className="text-white"
+//       />
+//     </Link>
+//   );
+// };

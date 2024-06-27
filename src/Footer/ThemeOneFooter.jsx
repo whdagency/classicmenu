@@ -115,7 +115,10 @@ const ThemeOneFooter = () => {
   };
 
   return (
-    <footer className="h-14 md:max-w-sm bottom-5 bg-black/70 fixed z-50 flex items-center justify-center w-full max-w-xs gap-5 mx-auto rounded">
+    <footer
+      style={{ backgroundColor: customization?.selectedPrimaryColor }}
+      className="h-14 md:max-w-sm bottom-5 fixed z-50 flex items-center justify-center w-full max-w-xs gap-5 mx-auto rounded"
+    >
       <div className="flex items-center justify-around w-full">
         <ThemeOneRating />
 
@@ -175,19 +178,23 @@ const CallWaiter = ({ customization, submitOrder, submitBill }) => {
       </Button>
 
       <div
+        style={{ backgroundColor: customization?.selectedPrimaryColor }}
         className={`flex flex-col ${
           openWaiterModal
             ? "transition-transform scale-100 translate-y-0 duration-500"
             : "transition-transform scale-0 duration-500 translate-y-20"
         } shadow items-center justify-center gap-3 py-5 px-10 w-[95%] md:w-[80%] mx-auto bg-black/70 absolute bottom-14 left-1/2 transform -translate-x-1/2 rounded-t-full`}
       >
-        <div className="font-thic flex items-center justify-center w-full gap-1 mt-2">
+        <div className=" flex items-center justify-center w-full gap-1 mt-2">
           <div className="flex flex-row items-center justify-center gap-5">
             <div className="flex flex-col items-center justify-center gap-2">
               <Button
                 onClick={submitOrder}
                 className="hover:bg-gray-200 flex items-center justify-center w-12 h-12 p-2 bg-white rounded-full shadow-lg"
                 size="icon"
+                style={{
+                  color: customization?.selectedSecondaryColor,
+                }}
               >
                 <img
                   src={"/assets/call-waiter.svg"}
@@ -202,6 +209,9 @@ const CallWaiter = ({ customization, submitOrder, submitBill }) => {
                 onClick={submitBill}
                 className="hover:bg-gray-200 flex items-center justify-center w-12 h-12 p-1 bg-white rounded-full shadow-lg"
                 size="icon"
+                style={{
+                  color: customization?.selectedSecondaryColor,
+                }}
               >
                 <img
                   src={"/assets/bring-bill.svg"}
@@ -216,6 +226,9 @@ const CallWaiter = ({ customization, submitOrder, submitBill }) => {
                 onClick={() => setOpenWaiterModal((prev) => !prev)}
                 className="hover:bg-gray-200 flex items-center justify-center w-12 h-12 p-2 bg-white rounded-full shadow-lg"
                 size="icon"
+                style={{
+                  color: customization?.selectedSecondaryColor,
+                }}
               >
                 <X size={25} className="text-black" />
               </Button>

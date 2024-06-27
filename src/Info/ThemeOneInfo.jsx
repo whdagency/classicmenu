@@ -66,7 +66,7 @@ const ThemeOneInfo = ({ activeLink }) => {
               style={{ aspectRatio: "80/80", objectFit: "cover" }}
               width={80}
             />
-            <h1 className="font-thic mb-2 text-2xl font-bold capitalize">
+            <h1 className=" mb-2 text-2xl font-bold capitalize">
               {restos.name}
             </h1>
             <div className="flex flex-wrap justify-center py-2 mb-6">

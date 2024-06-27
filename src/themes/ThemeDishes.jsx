@@ -27,7 +27,7 @@ const ThemeDishes = ({ category, dishes }) => {
   return (
     <>
       <AccordionItem value={category.id}>
-        <AccordionTrigger className="hover:bg-black hover:no-underline font-thic flex flex-row items-center justify-between w-full px-3 py-2 text-white uppercase bg-black rounded">
+        <AccordionTrigger className="hover:bg-black hover:no-underline  flex flex-row items-center justify-between w-full px-3 py-2 text-white uppercase bg-black rounded">
           {category.name}
         </AccordionTrigger>
 
@@ -42,15 +42,13 @@ const ThemeDishes = ({ category, dishes }) => {
               className="hover:bg-black/5 flex flex-col gap-2 p-2 cursor-pointer"
             >
               <div className="border-b-black/40 last:border-b-0 flex items-center justify-between border-b">
-                <h3 className="font-thic font-medium">{dish.name}</h3>
-                <p className="font-thic font-medium">
+                <h3 className=" font-medium">{dish.name}</h3>
+                <p className=" font-medium">
                   {dish.price} {resInfo.currency || "MAD"}
                 </p>
               </div>
 
-              <p className="text-black/60 font-thic text-sm font-light">
-                {dish.desc}
-              </p>
+              <p className="text-black/60  text-sm font-light">{dish.desc}</p>
             </div>
           ))}
         </AccordionContent>
