@@ -14,7 +14,6 @@ import { APIURL } from "../lib/ApiKey";
 import ThemeOneRating from "../Rating/ThemeOneRating";
 import ThemeOneClaims from "../Claims/ThemeOneClaims";
 import { X } from "lucide-react";
-import { useSelector } from "react-redux";
 
 const ThemeOneFooter = () => {
   const { customization, table_id, restos, restoSlug } = useMenu();
@@ -27,21 +26,17 @@ const ThemeOneFooter = () => {
   // get resto id
   const resto_id = restos.id;
 
-  // get cart items and total cost
-  const cartItems = useSelector((state) =>
-    state.cart.items.filter((item) => item.resto_id === resto_id)
-  );
-  const totalCost = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
-
-  // submit bill
-  const submitBill = async () => {
+  // submit notification for waiter or bill
+  const submitNotification = async ({
+    type,
+    title,
+    alertDialogTitle,
+    alertDialogDescription,
+  }) => {
     try {
       const notification = {
-        title: "Asking For Bill",
-        status: "Bill",
+        title: title,
+        status: type,
         resto_id: resto_id,
         table_id: table_id,
       };
@@ -54,63 +49,18 @@ const ThemeOneFooter = () => {
       });
 
       if (responseNotification) {
-        console.log("Nice => ", responseNotification);
+        console.log("Notification Response => ", responseNotification);
 
         setOpenSubmitItemModal({
           open: true,
-          title: "Bill Requested!",
-          description: "The bill will be sent to you shortly.",
+          // title: "Bill Requested!",
+          title: alertDialogTitle,
+          description: alertDialogDescription,
+          // description: "The bill will be sent to you shortly.",
         });
       }
-      // Handle post-order submission logic here, like clearing the cart or redirecting the user
     } catch (error) {
-      console.error("Failed to submit order:", error.message);
-    }
-  };
-
-  // submit order
-  const submitOrder = async () => {
-    const cartItemProduct = cartItems.map((item) => {
-      return {
-        type: item.type,
-        id: item.id,
-        quantity: item.quantity,
-      };
-    });
-
-    const order = {
-      total: totalCost,
-      status: "new",
-      table_id: table_id,
-      resto_id: resto_id,
-      cartItems: cartItemProduct,
-    };
-
-    try {
-      const response = await fetch(`${APIURL}/api/order`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(order),
-      });
-
-      if (!response.ok) {
-        const errorResponse = await response.text();
-        throw new Error(`HTTP error ${response.status}: ${errorResponse}`);
-      }
-
-      const responseData = await response.json();
-      console.log("Order submitted:", order, cartItemProduct, responseData);
-
-      setOpenSubmitItemModal({
-        open: true,
-        title: "Order Submitted!",
-        description: "Your order has been successfully submitted.",
-      });
-      // Handle post-order submission logic here, like clearing the cart or redirecting the user
-    } catch (error) {
-      console.error("Failed to submit order:", error.message);
+      console.error("Failed to submit notification:", error.message);
     }
   };
 
@@ -124,8 +74,7 @@ const ThemeOneFooter = () => {
 
         <CallWaiter
           customization={customization}
-          submitOrder={submitOrder}
-          submitBill={submitBill}
+          submitNotification={submitNotification}
         />
 
         <ThemeOneClaims />
@@ -142,7 +91,7 @@ const ThemeOneFooter = () => {
 export default ThemeOneFooter;
 
 // call a waiter
-const CallWaiter = ({ customization, submitOrder, submitBill }) => {
+const CallWaiter = ({ customization, submitNotification }) => {
   const [openWaiterModal, setOpenWaiterModal] = useState(false);
   const modalRef = useRef();
 
@@ -159,6 +108,24 @@ const CallWaiter = ({ customization, submitOrder, submitBill }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const handleCallWaiter = () => {
+    submitNotification({
+      type: "Waiter",
+      title: "New Call For Waiter",
+      alertDialogTitle: "Waiter Requested!",
+      alertDialogDescription: "The waiter will be sent to you shortly.",
+    });
+  };
+
+  const handleBringBill = () => {
+    submitNotification({
+      type: "Bill",
+      title: "Asking For Bill",
+      alertDialogTitle: "Bill Requested!",
+      alertDialogDescription: "The bill will be sent to you shortly.",
+    });
+  };
 
   return (
     <section ref={modalRef}>
@@ -189,7 +156,7 @@ const CallWaiter = ({ customization, submitOrder, submitBill }) => {
           <div className="flex flex-row items-center justify-center gap-5">
             <div className="flex flex-col items-center justify-center gap-2">
               <Button
-                onClick={submitOrder}
+                onClick={handleCallWaiter}
                 className="hover:bg-gray-200 flex items-center justify-center w-12 h-12 p-2 bg-white rounded-full shadow-lg"
                 size="icon"
                 style={{
@@ -206,7 +173,7 @@ const CallWaiter = ({ customization, submitOrder, submitBill }) => {
             </div>
             <div className="flex flex-col items-center justify-center gap-2">
               <Button
-                onClick={submitBill}
+                onClick={handleBringBill}
                 className="hover:bg-gray-200 flex items-center justify-center w-12 h-12 p-1 bg-white rounded-full shadow-lg"
                 size="icon"
                 style={{

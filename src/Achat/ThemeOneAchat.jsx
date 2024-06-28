@@ -109,7 +109,6 @@ const ThemeOneAchat = ({ activeLink }) => {
     }
   };
 
-  console.log({ customization });
   return (
     <Sheet>
       <SheetTrigger>

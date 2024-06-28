@@ -20,14 +20,20 @@ import { useDispatch } from "react-redux";
 import { addItem } from "../lib/cartSlice";
 
 const ThemeDishes = ({ category, dishes }) => {
-  const { resInfo } = useMenu();
+  const { resInfo, customization } = useMenu();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
   return (
     <>
       <AccordionItem value={category.id}>
-        <AccordionTrigger className="hover:bg-black hover:no-underline  flex flex-row items-center justify-between w-full px-3 py-2 text-white uppercase bg-black rounded">
+        <AccordionTrigger
+          style={{
+            // backgroundColor: customization?.selectedPrimaryColor,
+            color: customization?.selectedPrimaryColor,
+          }}
+          className="hover:bg-black hover:no-underline flex flex-row items-center justify-between w-full px-3 py-2 text-white uppercase bg-black rounded"
+        >
           {category.name}
         </AccordionTrigger>
 
@@ -48,7 +54,7 @@ const ThemeDishes = ({ category, dishes }) => {
                 </p>
               </div>
 
-              <p className="text-black/60  text-sm font-light">{dish.desc}</p>
+              <p className="text-black/60 text-sm font-light">{dish.desc}</p>
             </div>
           ))}
         </AccordionContent>
@@ -95,7 +101,7 @@ const AddDishToCart = ({ isModalOpen, setIsModalOpen, selectedItem }) => {
       open={isModalOpen}
       onOpenChange={setIsModalOpen}
     >
-      <CredenzaContent className="flex max-h-screen md:w-[50rem]  bg-white md:flex-col md:justify-center ">
+      <CredenzaContent className="flex max-h-screen md:w-[50rem] md:flex-col md:justify-center ">
         {selectedItem != null && (
           <>
             <CredenzaHeader
